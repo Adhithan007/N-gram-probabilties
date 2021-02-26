@@ -1,0 +1,120 @@
+function creating_kmers(k,String){
+var kmers=[];
+var N=String.length;
+
+for(i=0;i<N;i++){ 
+    var t=String.substring(i,k+i); 
+        kmers.push(t);
+        i=k+i
+    }
+
+return kmers;
+}
+
+function tokenizing(mseqnp,k){
+    mers_tokenized=[]
+for(var j=0;j<mseqnp.length-1;j++){
+    var x=creating_kmers(k,mseqnp[j])
+    mers_tokenized.push(x)
+}
+return mers_tokenized
+}
+
+
+function sets(Array,n1,n2){
+    var Array1=[]
+    for (i=n1;i<n2;i++){
+        Array1.push(Array[i])
+    }
+    return Array1 
+}
+
+function n_gram(s,n=2){
+    var arr=[]
+    for (var i=0;i<s.length;i++){
+    
+  if(i+n<=s.length){ 
+      if(sets(s,i,i+n).length== n){
+        arr.push(sets(s,i,i+n))
+    }
+  }
+    }
+    return arr
+}
+
+function n_grams_arr(mers_tokenized,n){
+    var gram=[]
+    for(j=0;j<mers_tokenized.length;j++){
+       var g= n_gram(mers_tokenized[j],n)
+        gram.push(g)
+    }
+    
+    var grams=joining(gram)
+
+return grams.sort()
+}
+
+
+function joining(arr){
+narr = new Array()
+for(i=0; i<arr.length; i++){
+    for(j=0; j<arr[i].length; j++){
+        narr.push((arr[i])[j])
+    }
+}
+    return narr 
+}
+
+
+function Counts(arr){
+    var counts = {};
+for (var i = 0; i < arr.length; i++) {
+    counts[arr[i]] = 1 + (counts[arr[i]] || 0);
+}
+return counts
+}
+
+
+function probabilty(arr,str){
+    var val=0
+    var countdic=  Counts(arr.sort())
+    var dictionary=countdic
+    var values = Object.keys(dictionary).map(function(key){
+    return dictionary[key];
+    });
+    var sumv=values.reduce((a, b) => a + b);
+
+    for(i=0;i<arr.length;i++){
+        if(arr[i]==str){
+            console.log("Probabilty of ",str," is :   ")
+            var dicv=countdic[str]
+            var val=dicv/sumv
+            console.log("                          ",val)
+            break
+        }
+        else if((arr[i])=!str){
+            console.log("String not available")
+            break
+        }
+        
+    }
+    
+    return val
+}
+
+var mers_tokenized = tokenizing(mseqnp,5)
+grams=n_grams_arr(mers_tokenized,1)
+console.log(Counts(grams))
+
+
+
+probabilty(grams,'AATAA')
+
+
+
+var fs = require('fs') 
+fs.readFile('MN908947.txt', 'utf-8',(err,text) => {
+    if (err) throw err;
+    data=text;
+})
+var mseqnp  = data.split('\n');
